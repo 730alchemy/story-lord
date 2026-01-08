@@ -14,6 +14,10 @@ license = {text = "MIT"}
 [tool.pdm]
 distribution = false
 
+[tool.pdm.scripts]
+start = "python src/story_lord.py"
+test = "pytest tests/ -v"
+
 [dependency-groups]
 dev = [
     "pytest>=9.0.2",
