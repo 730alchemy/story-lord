@@ -1,23 +1,7 @@
-from langchain.agents import create_agent
 from langchain_anthropic import ChatAnthropic
 from langchain_core.prompts import ChatPromptTemplate
 
 from models import ArchitectInput, PlotEvent, StoryArchitecture
-
-
-_agent = None
-
-
-def get_agent():
-    """Get or create the agent instance (lazy initialization)."""
-    global _agent
-    if _agent is None:
-        _agent = create_agent(
-            model="anthropic:claude-sonnet-4-20250514",
-            tools=[],
-            system_prompt="You are a helpful assistant.",
-        )
-    return _agent
 
 
 SYSTEM_PROMPT = """You are a master story architect. Your task is to create compelling plot events \
@@ -84,8 +68,14 @@ def _format_previous_events(events: list[PlotEvent]) -> str:
         lines.append(f"{event.summary}")
         lines.append("\nBeats:")
         for beat in event.beats:
-            chars = ", ".join(beat.characters_involved) if beat.characters_involved else "None"
-            lines.append(f"- [{beat.beat_type}] {beat.description} (Characters: {chars})")
+            chars = (
+                ", ".join(beat.characters_involved)
+                if beat.characters_involved
+                else "None"
+            )
+            lines.append(
+                f"- [{beat.beat_type}] {beat.description} (Characters: {chars})"
+            )
         lines.append("")
     return "\n".join(lines)
 
@@ -95,10 +85,12 @@ def create_architect_chain():
     llm = ChatAnthropic(model="claude-sonnet-4-20250514")
     structured_llm = llm.with_structured_output(PlotEvent)
 
-    prompt = ChatPromptTemplate.from_messages([
-        ("system", SYSTEM_PROMPT),
-        ("user", USER_PROMPT_TEMPLATE),
-    ])
+    prompt = ChatPromptTemplate.from_messages(
+        [
+            ("system", SYSTEM_PROMPT),
+            ("user", USER_PROMPT_TEMPLATE),
+        ]
+    )
 
     return prompt | structured_llm
 
@@ -118,16 +110,18 @@ def generate_story_architecture(input_data: ArchitectInput) -> StoryArchitecture
         current_event = i + 1
         previous_events_section = _format_previous_events(plot_events)
 
-        result = chain.invoke({
-            "story_idea": input_data.story_idea,
-            "tone": input_data.tone,
-            "characters_text": characters_text,
-            "current_event": current_event,
-            "total_events": input_data.num_plot_events,
-            "min_beats": min_beats,
-            "max_beats": max_beats,
-            "previous_events_section": previous_events_section,
-        })
+        result = chain.invoke(
+            {
+                "story_idea": input_data.story_idea,
+                "tone": input_data.tone,
+                "characters_text": characters_text,
+                "current_event": current_event,
+                "total_events": input_data.num_plot_events,
+                "min_beats": min_beats,
+                "max_beats": max_beats,
+                "previous_events_section": previous_events_section,
+            }
+        )
 
         plot_events.append(result)
 
