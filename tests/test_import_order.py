@@ -2,6 +2,7 @@
 Test that import order doesn't matter with lazy initialization.
 This test imports agents.first BEFORE config to verify the fix.
 """
+
 import sys
 from pathlib import Path
 
@@ -12,7 +13,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 def test_import_agents_before_config():
     """Test that importing agents.first before config doesn't cause errors."""
     # Import agents.first BEFORE config (would have failed before lazy initialization)
-    from agents.first import get_agent
+    from agents.architect import get_agent
 
     # Now import config
     from config import settings
@@ -28,7 +29,7 @@ def test_import_agents_before_config():
 def test_agent_invocation_with_reversed_imports():
     """Test that the agent actually works when imported before config."""
     # Import in reverse order again to ensure no side effects from previous test
-    from agents.first import get_agent
+    from agents.architect import get_agent
     from config import settings
 
     # Test that the agent can actually be invoked successfully
