@@ -42,3 +42,34 @@ class StoryArchitecture(BaseModel):
     """Complete story structure with all plot events and their beats."""
 
     plot_events: list[PlotEvent]
+
+
+# Narrator agent models
+
+
+class NarratorInput(BaseModel):
+    """Input parameters for the narrator agent."""
+
+    story_architecture: StoryArchitecture
+    characters: list[CharacterProfile]
+    tone: str
+
+
+class BeatNarration(BaseModel):
+    """Narrative text for a single story beat."""
+
+    narrative_text: str
+    beat_reference: str  # e.g., "Event 1, Beat 2"
+
+
+class ConflictEvaluation(BaseModel):
+    """Result of evaluating narrative against the story corpus."""
+
+    conflicts_found: list[str]
+    revised_narrative: str
+
+
+class NarratedStory(BaseModel):
+    """Complete narrated story output."""
+
+    narrations: list[BeatNarration]
