@@ -22,6 +22,17 @@ class ArchitectInput(BaseModel):
     tone: str
 
 
+class StoryInput(BaseModel):
+    """Input for the complete story generation pipeline."""
+
+    story_idea: str
+    characters: list[CharacterProfile]
+    num_plot_events: int
+    beats_per_event: tuple[int, int]  # (min, max) range
+    tone: str
+    output_file: str
+
+
 class StoryBeat(BaseModel):
     """A narrative event within a plot event."""
 
