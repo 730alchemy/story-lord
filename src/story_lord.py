@@ -1,11 +1,14 @@
 import argparse
 from pathlib import Path
 
+import structlog
 import yaml
 
 from config import settings
 from models import ArchitectInput, NarratorInput, StoryInput
 from agents import generate_story_architecture, generate_narration
+
+log = structlog.get_logger(__name__)
 
 
 def main():
@@ -19,7 +22,7 @@ def main():
     story_input = StoryInput.model_validate(data)
 
     # Run architect
-    print("Running architect...")
+    log.info("running_architect")
     architect_input = ArchitectInput(
         story_idea=story_input.story_idea,
         characters=story_input.characters,
@@ -36,10 +39,10 @@ def main():
     # Save architecture
     arch_path = output_dir / f"{story_input.output_file}_architecture.json"
     arch_path.write_text(architecture.model_dump_json(indent=2))
-    print(f"Architecture saved to {arch_path}")
+    log.info("architecture_saved", path=str(arch_path))
 
     # Run narrator
-    print("Running narrator...")
+    log.info("running_narrator")
     narrator_input = NarratorInput(
         story_architecture=architecture,
         characters=story_input.characters,
@@ -51,7 +54,7 @@ def main():
     narrative_path = output_dir / f"{story_input.output_file}_narrative.txt"
     narrative_text = "\n\n".join(n.narrative_text for n in narrated_story.narrations)
     narrative_path.write_text(narrative_text)
-    print(f"Narrative saved to {narrative_path}")
+    log.info("narrative_saved", path=str(narrative_path))
 
 
 if __name__ == "__main__":

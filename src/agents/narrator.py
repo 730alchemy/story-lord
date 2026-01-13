@@ -1,3 +1,4 @@
+import structlog
 from langchain_anthropic import ChatAnthropic
 from langchain_core.prompts import ChatPromptTemplate
 
@@ -10,6 +11,8 @@ from models import (
     PlotEvent,
     StoryBeat,
 )
+
+log = structlog.get_logger(__name__)
 
 
 GENERATION_SYSTEM_PROMPT = """You are a master storyteller and narrator. Your task is to transform story beats \
@@ -254,7 +257,14 @@ def generate_narration(input_data: NarratorInput) -> NarratedStory:
             # Iteration 1: Generate initial narrative
             narration = generation_chain.invoke(generation_context)
             narration.beat_reference = beat_reference
-            print(f"[Narrator] Plot event {event_idx + 1}, beat {beat_idx + 1}, iteration 1 (generate) complete")
+            log.info(
+                "beat_iteration_complete",
+                agent="narrator",
+                plot_event=event_idx + 1,
+                beat=beat_idx + 1,
+                iteration=1,
+                phase="generate",
+            )
 
             # Iterations 2 and 3: Evaluate and revise
             for iteration in range(2, 4):
@@ -270,7 +280,14 @@ def generate_narration(input_data: NarratorInput) -> NarratedStory:
 
                 eval_result = evaluation_chain.invoke(eval_context)
                 narration.narrative_text = eval_result.revised_narrative
-                print(f"[Narrator] Plot event {event_idx + 1}, beat {beat_idx + 1}, iteration {iteration} (evaluate) complete")
+                log.info(
+                    "beat_iteration_complete",
+                    agent="narrator",
+                    plot_event=event_idx + 1,
+                    beat=beat_idx + 1,
+                    iteration=iteration,
+                    phase="evaluate",
+                )
 
             all_narrations.append(narration)
 

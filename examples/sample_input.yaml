@@ -22,7 +22,7 @@ characters:
     relationships: "None"
     backstory: "Made millions developing robots used in mining. Grew up in Greece."
 
-num_plot_events: 2
-beats_per_event: [1, 2]
+num_plot_events: 1
+beats_per_event: [1, 1]
 tone: "surreal science fiction with deadpan humor"
 output_file: "trapped_story"

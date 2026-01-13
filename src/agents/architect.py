@@ -1,7 +1,10 @@
+import structlog
 from langchain_anthropic import ChatAnthropic
 from langchain_core.prompts import ChatPromptTemplate
 
 from models import ArchitectInput, PlotEvent, StoryArchitecture
+
+log = structlog.get_logger(__name__)
 
 
 SYSTEM_PROMPT = """You are a master story architect. Your task is to create compelling plot events \
@@ -123,7 +126,13 @@ def generate_story_architecture(input_data: ArchitectInput) -> StoryArchitecture
             }
         )
 
-        print(f"[Architect] Plot event {current_event}/{input_data.num_plot_events} complete ({len(result.beats)} beats)")
+        log.info(
+            "plot_event_complete",
+            agent="architect",
+            plot_event=current_event,
+            total_events=input_data.num_plot_events,
+            beats=len(result.beats),
+        )
         plot_events.append(result)
 
     return StoryArchitecture(plot_events=plot_events)
