@@ -45,8 +45,8 @@ print("=" * 60)
 architect_input = ArchitectInput(
     story_idea="Two frenemies in their 30s, Elijah Boondog and Jasper Dilsack, get trapped in a small town while on vacation. Each setback that keeps them from leaving seems innocuous but add up to something sinister. Although Riley Thorn is behind the entrapment, in the end we find a 10 year old boy has been pulling the strings all along.",
     characters=characters,
-    num_plot_events=4,
-    beats_per_event=(2, 4),
+    num_plot_events=2,
+    beats_per_event=(1, 2),
     tone=tone,
 )
 

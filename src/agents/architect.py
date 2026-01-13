@@ -123,6 +123,7 @@ def generate_story_architecture(input_data: ArchitectInput) -> StoryArchitecture
             }
         )
 
+        print(f"[Architect] Plot event {current_event}/{input_data.num_plot_events} complete ({len(result.beats)} beats)")
         plot_events.append(result)
 
     return StoryArchitecture(plot_events=plot_events)
