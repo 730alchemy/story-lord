@@ -1,5 +1,6 @@
-import logging
+import logging.config
 import os
+from pathlib import Path
 
 import structlog
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -13,16 +14,21 @@ class Settings(BaseSettings):
 
 def configure_logging():
     """Configure structlog with stdlib logging integration."""
-    # Configure stdlib logging
-    logging.basicConfig(format="%(message)s", level=logging.INFO)
+    # Ensure log directory exists
+    Path("logs").mkdir(exist_ok=True)
 
-    # Suppress noisy HTTP client logs
-    logging.getLogger("httpx").setLevel(logging.WARNING)
+    # Shared processors for all logs
+    shared_processors = [
+        structlog.contextvars.merge_contextvars,
+        structlog.stdlib.add_log_level,
+        structlog.stdlib.add_logger_name,
+        structlog.processors.TimeStamper(fmt="iso"),
+    ]
 
-    # Get default columns and reorder: timestamp, level, logger, event, context vars
+    # Console renderer with reordered columns: timestamp, level, logger, event, context vars
     default_renderer = structlog.dev.ConsoleRenderer()
     default_columns = {c.key: c for c in default_renderer._columns}
-    columns = [
+    console_columns = [
         default_columns["timestamp"],
         default_columns["level"],
         default_columns["logger"],
@@ -30,14 +36,56 @@ def configure_logging():
         structlog.dev.Column("", default_renderer._default_column_formatter),
     ]
 
+    logging.config.dictConfig(
+        {
+            "version": 1,
+            "disable_existing_loggers": False,
+            "formatters": {
+                "console": {
+                    "()": structlog.stdlib.ProcessorFormatter,
+                    "processors": [
+                        structlog.stdlib.ProcessorFormatter.remove_processors_meta,
+                        structlog.dev.ConsoleRenderer(columns=console_columns),
+                    ],
+                    "foreign_pre_chain": shared_processors,
+                },
+                "json": {
+                    "()": structlog.stdlib.ProcessorFormatter,
+                    "processors": [
+                        structlog.stdlib.ProcessorFormatter.remove_processors_meta,
+                        structlog.processors.JSONRenderer(),
+                    ],
+                    "foreign_pre_chain": shared_processors,
+                },
+            },
+            "handlers": {
+                "console": {
+                    "class": "logging.StreamHandler",
+                    "formatter": "console",
+                },
+                "file": {
+                    "class": "logging.handlers.WatchedFileHandler",
+                    "filename": "logs/storylord.log",
+                    "formatter": "json",
+                },
+            },
+            "loggers": {
+                "": {
+                    "handlers": ["console", "file"],
+                    "level": "INFO",
+                },
+                "httpx": {
+                    "level": "WARNING",
+                },
+            },
+        }
+    )
+
     # Configure structlog to use stdlib
     structlog.configure(
         processors=[
-            structlog.contextvars.merge_contextvars,
-            structlog.stdlib.add_log_level,
-            structlog.stdlib.add_logger_name,
-            structlog.processors.TimeStamper(fmt="iso"),
-            structlog.dev.ConsoleRenderer(columns=columns),
+            *shared_processors,
+            structlog.stdlib.ProcessorFormatter.wrap_for_formatter,
         ],
         wrapper_class=structlog.stdlib.BoundLogger,
         context_class=dict,
