@@ -20,10 +20,23 @@ default = "agents.builtins.narrator_default:DefaultNarrator"
 distribution = true
 
 [tool.pdm.scripts]
+fmt = { composite = [
+  "echo '\nFix Lint Violations\n----------'",
+  "ruff check --fix --show-fixes .",
+  "echo '\nFix Format Violations\n----------'",
+  "ruff format .",
+] }
+lint = { composite = [
+  "echo '\nLint Check\n----------'",
+  "ruff check -e .",
+  "echo '\nFormat Check\n----------'",
+  "bash -c 'ruff format --check . || true'",
+] }
 start = "python src/story_lord.py"
 test = "pytest tests/ -v"
 
 [dependency-groups]
 dev = [
     "pytest>=9.0.2",
+    "ruff>=0.14.11",
 ]

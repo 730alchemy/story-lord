@@ -293,9 +293,7 @@ class DefaultNarrator:
         # Earlier beats from current event
         if current_beat_idx > 0:
             event_num = len(prior_events) + 1
-            lines.append(
-                f"### Plot Event {event_num} (Current): {current_event.title}"
-            )
+            lines.append(f"### Plot Event {event_num} (Current): {current_event.title}")
             lines.append(f"{current_event.summary}\n")
             for beat in current_event.beats[:current_beat_idx]:
                 chars = (

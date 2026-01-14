@@ -3,7 +3,6 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent / "src"))
 
-from config import settings
 from models import ArchitectInput, CharacterProfile
 from agents.architect import generate_story_architecture
 

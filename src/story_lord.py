@@ -4,7 +4,6 @@ from pathlib import Path
 import structlog
 import yaml
 
-from config import settings
 from models import ArchitectInput, NarratorInput, StoryInput
 from agents.discovery import get_architect, get_narrator
 from tools.registry import ToolRegistry
@@ -13,7 +12,9 @@ log = structlog.get_logger(__name__)
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Generate a story from input parameters")
+    parser = argparse.ArgumentParser(
+        description="Generate a story from input parameters"
+    )
     parser.add_argument("input_file", help="YAML file with story parameters")
     args = parser.parse_args()
 
