@@ -1,7 +1,7 @@
 [project]
-name = "story-lord"
+name = "storylord"
 version = "0.1.0"
-description = "Default template for PDM package"
+description = "AI-powered story generation with pluggable agents"
 authors = [
     {name = "Mark Norman", email = "mark@marknorman.com"},
 ]
@@ -10,9 +10,14 @@ requires-python = "==3.13.*"
 readme = "README.md"
 license = {text = "MIT"}
 
+[project.entry-points."storylord.architects"]
+default = "agents.builtins.architect_default:DefaultArchitect"
+
+[project.entry-points."storylord.narrators"]
+default = "agents.builtins.narrator_default:DefaultNarrator"
 
 [tool.pdm]
-distribution = false
+distribution = true
 
 [tool.pdm.scripts]
 start = "python src/story_lord.py"

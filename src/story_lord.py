@@ -6,7 +6,8 @@ import yaml
 
 from config import settings
 from models import ArchitectInput, NarratorInput, StoryInput
-from agents import generate_story_architecture, generate_narration
+from agents.discovery import get_architect, get_narrator
+from tools.registry import ToolRegistry
 
 log = structlog.get_logger(__name__)
 
@@ -21,8 +22,15 @@ def main():
         data = yaml.safe_load(f)
     story_input = StoryInput.model_validate(data)
 
+    # Build tool registry from config
+    tool_registry = ToolRegistry(story_input.tools) if story_input.tools else None
+
+    # Get agents via entry point discovery
+    architect = get_architect(story_input.architect)
+    narrator = get_narrator(story_input.narrator)
+
     # Run architect
-    log.info("running_architect")
+    log.info("running_architect", architect=story_input.architect)
     architect_input = ArchitectInput(
         story_idea=story_input.story_idea,
         characters=story_input.characters,
@@ -30,7 +38,7 @@ def main():
         beats_per_event=story_input.beats_per_event,
         tone=story_input.tone,
     )
-    architecture = generate_story_architecture(architect_input)
+    architecture = architect.generate(architect_input, tools=tool_registry)
 
     # Ensure output directory exists
     output_dir = Path("output")
@@ -42,13 +50,13 @@ def main():
     log.info("architecture_saved", path=str(arch_path))
 
     # Run narrator
-    log.info("running_narrator")
+    log.info("running_narrator", narrator=story_input.narrator)
     narrator_input = NarratorInput(
         story_architecture=architecture,
         characters=story_input.characters,
         tone=story_input.tone,
     )
-    narrated_story = generate_narration(narrator_input)
+    narrated_story = narrator.generate(narrator_input, tools=tool_registry)
 
     # Save narrative
     narrative_path = output_dir / f"{story_input.output_file}_narrative.txt"

@@ -32,6 +32,11 @@ class StoryInput(BaseModel):
     tone: str
     output_file: str
 
+    # Agent and tool selection (discovered via entry points)
+    architect: str = "default"
+    narrator: str = "default"
+    tools: list[str] | None = None
+
 
 class StoryBeat(BaseModel):
     """A narrative event within a plot event."""
