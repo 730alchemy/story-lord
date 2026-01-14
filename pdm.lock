@@ -215,7 +215,7 @@ files = [
 
 [[package]]
 name = "langchain"
-version = "1.2.2"
+version = "1.2.4"
 summary = ""
 dependencies = [
     "langchain-core",
@@ -223,8 +223,8 @@ dependencies = [
     "pydantic",
 ]
 files = [
-    {file = "langchain-1.2.2-py3-none-any.whl", hash = "sha256:1aed3d6a3d7180d0db9b8789f38ea1c4f8c883248e86501ed580e7f5c3ca939f"},
-    {file = "langchain-1.2.2.tar.gz", hash = "sha256:3f49321cfbf821b3f541aa8a504c35b48ef5e9518a948efa8eeb20cb16eb95a8"},
+    {file = "langchain-1.2.4-py3-none-any.whl", hash = "sha256:182ac9f3c4559c5a6477e00d60ff8a56212ec4db6f101a4957492818dc3ce3e9"},
+    {file = "langchain-1.2.4.tar.gz", hash = "sha256:65119ff1c2ac8cc2410739b0fb2773f8fbfbe83357df9bab8a5fceafb9e04aa1"},
 ]
 
 [[package]]

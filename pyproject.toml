@@ -20,6 +20,18 @@ default = "agents.builtins.narrator_default:DefaultNarrator"
 distribution = true
 
 [tool.pdm.scripts]
+health = { composite = [
+  "echo '\nCheck project for PDM problems\n----------'",
+  "pdm fix --dry-run",
+  "echo '\nCheck for outdated packages\n----------'",
+  "pdm outdated",
+  "echo '\nCheck if lock file is up to date\n----------'",
+  "pdm lock --check",
+  "echo '\nCheck if installed packages match lock file\n----------'",
+  "pdm sync --dry-run",
+  "echo '\nShow project information\n----------'",
+  "pdm info"
+]}
 fmt = { composite = [
   "echo '\nFix Lint Violations\n----------'",
   "ruff check --fix --show-fixes .",
