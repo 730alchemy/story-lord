@@ -5,8 +5,8 @@ import structlog
 import yaml
 
 from config import settings  # noqa: F401
-from models import ArchitectInput, NarratorInput, StoryInput
-from agents.discovery import get_architect, get_narrator
+from models import ArchitectInput, EditorInput, NarratorInput, StoryInput
+from agents.discovery import get_architect, get_editor, get_narrator
 from tools.registry import ToolRegistry
 
 log = structlog.get_logger(__name__)
@@ -55,9 +55,19 @@ def run_story_generation(input_file: str) -> None:
     )
     narrated_story = narrator.generate(narrator_input, tools=tool_registry)
 
+    # Run simile-smasher editor on each narration
+    log.info("running_editor", editor="simile-smasher")
+    editor = get_editor("simile-smasher")
+    edited_narrations = []
+    for narration in narrated_story.narrations:
+        editor_input = EditorInput(text=narration.narrative_text)
+        edited = editor.edit(editor_input)
+        edited_narrations.append(edited.text)
+        log.info("narration_edited", beat_reference=narration.beat_reference)
+
     # Save narrative
     narrative_path = output_dir / f"{story_input.output_file}_narrative.txt"
-    narrative_text = "\n\n".join(n.narrative_text for n in narrated_story.narrations)
+    narrative_text = "\n\n".join(edited_narrations)
     narrative_path.write_text(narrative_text)
     log.info("narrative_saved", path=str(narrative_path))
 
