@@ -89,3 +89,18 @@ class NarratedStory(BaseModel):
     """Complete narrated story output."""
 
     narrations: list[BeatNarration]
+
+
+# Editor agent models
+
+
+class EditorInput(BaseModel):
+    """Input parameters for the editor agent."""
+
+    text: str
+
+
+class EditedText(BaseModel):
+    """Output from the editor agent."""
+
+    text: str

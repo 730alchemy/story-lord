@@ -16,6 +16,9 @@ default = "agents.builtins.architect_default:DefaultArchitect"
 [project.entry-points."storylord.narrators"]
 default = "agents.builtins.narrator_default:DefaultNarrator"
 
+[project.entry-points."storylord.editors"]
+default = "agents.builtins.editor_default:DefaultEditor"
+
 [tool.pdm]
 distribution = true
 

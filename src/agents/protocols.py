@@ -9,7 +9,14 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Protocol
 
 if TYPE_CHECKING:
-    from models import ArchitectInput, NarratorInput, NarratedStory, StoryArchitecture
+    from models import (
+        ArchitectInput,
+        EditedText,
+        EditorInput,
+        NarratedStory,
+        NarratorInput,
+        StoryArchitecture,
+    )
     from tools.registry import ToolRegistry
 
 
@@ -63,5 +70,30 @@ class Narrator(Protocol):
 
         Returns:
             A complete narrated story with prose for each beat.
+        """
+        ...
+
+
+class Editor(Protocol):
+    """Protocol for text editors.
+
+    Editors improve and refine text, enhancing clarity, style, and quality.
+    """
+
+    name: str
+
+    def edit(
+        self,
+        input: EditorInput,
+        tools: ToolRegistry | None = None,
+    ) -> EditedText:
+        """Edit and improve the given text.
+
+        Args:
+            input: The editor input containing text to edit.
+            tools: Optional registry of tools the agent can use.
+
+        Returns:
+            The edited and improved text.
         """
         ...

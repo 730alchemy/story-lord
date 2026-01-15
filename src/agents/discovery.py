@@ -8,7 +8,7 @@ from importlib.metadata import entry_points
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from agents.protocols import Architect, Narrator
+    from agents.protocols import Architect, Editor, Narrator
 
 
 def discover_architects() -> dict[str, type]:
@@ -85,3 +85,41 @@ def list_narrators() -> list[str]:
         A sorted list of registered narrator names.
     """
     return sorted(discover_narrators().keys())
+
+
+def discover_editors() -> dict[str, type]:
+    """Discover all registered editors from installed packages.
+
+    Returns:
+        A dictionary mapping editor names to their classes.
+    """
+    eps = entry_points(group="storylord.editors")
+    return {ep.name: ep.load() for ep in eps}
+
+
+def get_editor(name: str) -> "Editor":
+    """Get an editor instance by name.
+
+    Args:
+        name: The registered name of the editor.
+
+    Returns:
+        An instance of the requested editor.
+
+    Raises:
+        ValueError: If the editor name is not found.
+    """
+    editors = discover_editors()
+    if name not in editors:
+        available = ", ".join(sorted(editors.keys())) or "(none)"
+        raise ValueError(f"Unknown editor '{name}'. Available: {available}")
+    return editors[name]()
+
+
+def list_editors() -> list[str]:
+    """List all available editor names.
+
+    Returns:
+        A sorted list of registered editor names.
+    """
+    return sorted(discover_editors().keys())

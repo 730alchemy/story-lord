@@ -4,6 +4,7 @@ from pathlib import Path
 import structlog
 import yaml
 
+from config import settings  # noqa: F401
 from models import ArchitectInput, NarratorInput, StoryInput
 from agents.discovery import get_architect, get_narrator
 from tools.registry import ToolRegistry
