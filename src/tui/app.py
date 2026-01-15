@@ -4,7 +4,9 @@ from textual.app import App, ComposeResult
 from textual.binding import Binding
 from textual.containers import Center, Horizontal, Vertical
 from textual.screen import ModalScreen
-from textual.widgets import Footer, Input, Static, TextArea
+from textual.widgets import Footer, Input, Select, Static, TextArea
+from textual import work
+from textual.worker import get_current_worker
 
 from agents.discovery import get_editor, list_architects, list_editors, list_narrators
 from models import EditorInput
@@ -20,11 +22,18 @@ class EditorScreen(ModalScreen):
     ]
 
     def compose(self) -> ComposeResult:
+        editors = list_editors()
         with Vertical():
             yield Static("Editor - Enter text to improve", id="editor-title")
+            yield Select(
+                [(name, name) for name in editors],
+                id="editor-select",
+                value=editors[0] if editors else None,
+                prompt="Select editor",
+            )
             yield Static("Input:", id="input-label")
             yield TextArea(id="editor-input")
-            yield Static("Output:", id="output-label")
+            yield Static("Edited Text:", id="output-label")
             yield TextArea(id="editor-output", read_only=True)
             yield Footer()
 
@@ -32,15 +41,42 @@ class EditorScreen(ModalScreen):
         """Run the editor agent on the input text."""
         input_area = self.query_one("#editor-input", TextArea)
         output_area = self.query_one("#editor-output", TextArea)
-        text = input_area.text
+        select = self.query_one("#editor-select", Select)
 
+        text = input_area.text
         if not text.strip():
+            output_area.clear()
             output_area.text = "No input text provided."
             return
 
-        editor = get_editor("default")
+        if select.value is None:
+            output_area.clear()
+            output_area.text = "No editor selected."
+            return
+
+        output_area.clear()
+        output_area.text = "Running editor..."
+        self._run_editor_worker(text, select.value)
+
+    @work(thread=True)
+    def _run_editor_worker(self, text: str, editor_name: str) -> None:
+        """Run the editor in a background thread."""
+        worker = get_current_worker()
+        editor = get_editor(editor_name)
         result = editor.edit(EditorInput(text=text))
-        output_area.text = result.text
+        if not worker.is_cancelled:
+            self.app.call_from_thread(self._update_output, result.text)
+
+    def _update_output(self, text: str) -> None:
+        """Update the output area with the result."""
+        output_area = self.query_one("#editor-output", TextArea)
+        output_area.clear()
+        output_area.text = text
+
+    def on_select_changed(self, event: Select.Changed) -> None:
+        """Clear output when editor selection changes."""
+        output_area = self.query_one("#editor-output", TextArea)
+        output_area.clear()
 
     def action_load_file(self) -> None:
         """Prompt for a file path and load its contents."""

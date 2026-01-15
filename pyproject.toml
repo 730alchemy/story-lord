@@ -18,6 +18,7 @@ default = "agents.builtins.narrator_default:DefaultNarrator"
 
 [project.entry-points."storylord.editors"]
 default = "agents.builtins.editor_default:DefaultEditor"
+simile-smasher = "agents.builtins.editor_simile_smasher:SimileSmasherEditor"
 
 [tool.pdm]
 distribution = true
