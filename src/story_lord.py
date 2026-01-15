@@ -12,15 +12,10 @@ from tools.registry import ToolRegistry
 log = structlog.get_logger(__name__)
 
 
-def main():
-    parser = argparse.ArgumentParser(
-        description="Generate a story from input parameters"
-    )
-    parser.add_argument("input_file", help="YAML file with story parameters")
-    args = parser.parse_args()
-
+def run_story_generation(input_file: str) -> None:
+    """Generate a story from the given input file."""
     # Load input
-    with open(args.input_file) as f:
+    with open(input_file) as f:
         data = yaml.safe_load(f)
     story_input = StoryInput.model_validate(data)
 
@@ -65,6 +60,25 @@ def main():
     narrative_text = "\n\n".join(n.narrative_text for n in narrated_story.narrations)
     narrative_path.write_text(narrative_text)
     log.info("narrative_saved", path=str(narrative_path))
+
+
+def run_tui() -> None:
+    """Launch the TUI application."""
+    from tui import StoryLordApp
+
+    app = StoryLordApp()
+    app.run()
+
+
+def main():
+    parser = argparse.ArgumentParser(description="AI-powered story generation")
+    parser.add_argument("-f", "--file", help="YAML file with story parameters")
+    args = parser.parse_args()
+
+    if args.file:
+        run_story_generation(args.file)
+    else:
+        run_tui()
 
 
 if __name__ == "__main__":
