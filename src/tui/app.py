@@ -19,6 +19,7 @@ class EditorScreen(ModalScreen):
         Binding("escape", "dismiss", "Close"),
         Binding("ctrl+r", "run_editor", "Run"),
         Binding("ctrl+o", "load_file", "Open"),
+        Binding("ctrl+q", "app.quit", "Quit"),
     ]
 
     def compose(self) -> ComposeResult:
@@ -103,6 +104,7 @@ class FileInputModal(ModalScreen[str | None]):
 
     BINDINGS = [
         Binding("escape", "cancel", "Cancel"),
+        Binding("ctrl+q", "app.quit", "Quit"),
     ]
 
     def compose(self) -> ComposeResult:
@@ -125,6 +127,7 @@ class AgentsModal(ModalScreen):
 
     BINDINGS = [
         Binding("escape", "dismiss", "Close"),
+        Binding("ctrl+q", "app.quit", "Quit"),
     ]
 
     def compose(self) -> ComposeResult:
