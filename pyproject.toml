@@ -11,14 +11,14 @@ readme = "README.md"
 license = {text = "MIT"}
 
 [project.entry-points."storylord.architects"]
-default = "agents.builtins.architect_default:DefaultArchitect"
+default = "agents.architect.architect_default:DefaultArchitect"
 
 [project.entry-points."storylord.narrators"]
-default = "agents.builtins.narrator_default:DefaultNarrator"
+default = "agents.narrative.narrator_default:DefaultNarrator"
 
 [project.entry-points."storylord.editors"]
-default = "agents.builtins.editor_default:DefaultEditor"
-simile-smasher = "agents.builtins.editor_simile_smasher:SimileSmasherEditor"
+default = "agents.editor.editor_default:DefaultEditor"
+simile-smasher = "agents.editor.editor_simile_smasher:SimileSmasherEditor"
 
 [tool.pdm]
 distribution = true

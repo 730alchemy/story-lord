@@ -17,8 +17,10 @@ from agents.discovery import (
     list_narrators,
 )
 
-# Backward compatibility - import built-in agents
-from agents.builtins import DefaultArchitect, DefaultEditor, DefaultNarrator
+# Import built-in agents from their respective modules
+from agents.architect import DefaultArchitect
+from agents.editor import DefaultEditor
+from agents.narrative import DefaultNarrator
 
 __all__ = [
     # Protocols

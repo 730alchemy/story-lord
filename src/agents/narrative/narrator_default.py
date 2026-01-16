@@ -194,6 +194,17 @@ class DefaultNarrator:
                     }
 
                     eval_result = evaluation_chain.invoke(eval_context)
+
+                    if eval_result.conflicts_found:
+                        log.info(
+                            "conflicts_found",
+                            narrator=self.name,
+                            plot_event=event_idx + 1,
+                            beat=beat_idx + 1,
+                            iteration=iteration,
+                            conflicts=eval_result.conflicts_found,
+                        )
+
                     narration.narrative_text = eval_result.revised_narrative
                     log.info(
                         "beat_iteration_complete",
