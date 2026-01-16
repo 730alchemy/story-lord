@@ -204,6 +204,14 @@ class DefaultNarrator:
                             iteration=iteration,
                             conflicts=eval_result.conflicts_found,
                         )
+                    else:
+                        log.info(
+                            "no_conflicts_found",
+                            narrator=self.name,
+                            plot_event=event_idx + 1,
+                            beat=beat_idx + 1,
+                            iteration=iteration,
+                        )
 
                     narration.narrative_text = eval_result.revised_narrative
                     log.info(
@@ -214,6 +222,10 @@ class DefaultNarrator:
                         iteration=iteration,
                         phase="evaluate",
                     )
+
+                    # Exit early if first evaluation finds no conflicts
+                    if not eval_result.conflicts_found:
+                        break
 
                 all_narrations.append(narration)
 
