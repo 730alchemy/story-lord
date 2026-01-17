@@ -6,6 +6,7 @@ from typing import Literal
 import structlog
 
 from agents.discovery import get_architect, get_editor, get_narrator
+from graph.delta import compute_text_delta
 from graph.state import StoryGenerationState
 from models import ArchitectInput, EditorInput, NarratorInput
 from tools.registry import ToolRegistry
@@ -90,11 +91,15 @@ def editor_node(state: StoryGenerationState) -> dict:
     editor = get_editor("simile-smasher")
     editor_input = EditorInput(text=narration.narrative_text)
     edited = editor.edit(editor_input)
-    log.info("narration_edited", beat_reference=narration.beat_reference)
+
+    # Compute and log delta
+    delta = compute_text_delta(narration.narrative_text, edited.text)
+    log.info("narration_edited", beat_reference=narration.beat_reference, delta=delta)
 
     return {
         "edited_narrations": [edited.text],  # Uses reducer to append
         "current_narration_index": current_index + 1,
+        "edit_history": [{"beat_reference": narration.beat_reference, "delta": delta}],
     }
 
 

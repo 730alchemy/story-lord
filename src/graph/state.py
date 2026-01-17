@@ -17,6 +17,7 @@ class StoryGenerationState(TypedDict):
     architecture: StoryArchitecture | None
     narrated_story: NarratedStory | None
     edited_narrations: Annotated[list[str], operator.add]  # Reducer for append
+    edit_history: Annotated[list[dict], operator.add]  # [{beat_reference, delta}, ...]
     current_narration_index: int
     output_dir: str
     architecture_saved: bool

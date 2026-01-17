@@ -2,7 +2,7 @@
 
 from textual.app import App, ComposeResult
 from textual.binding import Binding
-from textual.containers import Center, Horizontal, Vertical
+from textual.containers import Center, Vertical
 from textual.screen import ModalScreen
 from textual.widgets import Footer, Input, Select, Static, TextArea
 from textual import work

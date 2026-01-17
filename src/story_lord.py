@@ -38,6 +38,7 @@ def run_story_generation(
         "architecture": None,
         "narrated_story": None,
         "edited_narrations": [],
+        "edit_history": [],
         "current_narration_index": 0,
         "output_dir": "output",
         "architecture_saved": False,
