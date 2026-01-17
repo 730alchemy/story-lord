@@ -1,5 +1,6 @@
 """Node functions for story generation graph."""
 
+from datetime import datetime
 from pathlib import Path
 from typing import Literal
 
@@ -52,9 +53,10 @@ def save_architecture_node(state: StoryGenerationState) -> dict:
     story_input = state["story_input"]
     architecture = state["architecture"]
     output_dir = Path(state["output_dir"])
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
 
     output_dir.mkdir(exist_ok=True)
-    arch_path = output_dir / f"{story_input.output_file}_architecture.json"
+    arch_path = output_dir / f"{story_input.output_file}_architecture_{timestamp}.json"
     arch_path.write_text(architecture.model_dump_json(indent=2))
     log.info("architecture_saved", path=str(arch_path))
 
@@ -111,9 +113,10 @@ def save_narrative_node(state: StoryGenerationState) -> dict:
     story_input = state["story_input"]
     edited_narrations = state["edited_narrations"]
     output_dir = Path(state["output_dir"])
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
 
     output_dir.mkdir(exist_ok=True)
-    narrative_path = output_dir / f"{story_input.output_file}_narrative.txt"
+    narrative_path = output_dir / f"{story_input.output_file}_narrative_{timestamp}.txt"
     narrative_text = "\n\n".join(edited_narrations)
     narrative_path.write_text(narrative_text)
     log.info("narrative_saved", path=str(narrative_path))

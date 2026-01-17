@@ -17,10 +17,11 @@ log = structlog.get_logger(__name__)
 
 
 SYSTEM_PROMPT = """Follow these guidelines to improve text
+- Do not modify any dialogue
 - Find all similes in the text and convert them to direct metaphors. A simile compares two things using "like" or "as" (e.g., "Her eyes were like stars"). A metaphor states that one thing IS another (e.g., "Her eyes were stars").
 - If a sentence uses a form of the verb "to be" (e.g. "is", "was", "are"), generate an alternative of the sentence that retains the same meaning and uses an action verb
 
-Make only necessary changes. Do not change text that is lies outside the guidelines defined above"""
+Make only necessary changes. Do not change text that is lies outside the guidelines defined above. Do not change any dialogue"""
 
 
 USER_PROMPT_TEMPLATE = """{text}"""
