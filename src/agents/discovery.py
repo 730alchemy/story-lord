@@ -8,6 +8,7 @@ from importlib.metadata import entry_points
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
+    from agents.character.protocols import CharacterAgentType
     from agents.protocols import Architect, Editor, Narrator
 
 
@@ -123,3 +124,43 @@ def list_editors() -> list[str]:
         A sorted list of registered editor names.
     """
     return sorted(discover_editors().keys())
+
+
+def discover_character_agent_types() -> dict[str, "CharacterAgentType"]:
+    """Discover all registered character agent types from installed packages.
+
+    Returns:
+        A dictionary mapping character agent type names to their instances.
+    """
+    eps = entry_points(group="storylord.character_agents")
+    return {ep.name: ep.load()() for ep in eps}
+
+
+def get_character_agent_type(name: str) -> "CharacterAgentType":
+    """Get a character agent type instance by name.
+
+    Args:
+        name: The registered name of the character agent type.
+
+    Returns:
+        An instance of the requested character agent type.
+
+    Raises:
+        ValueError: If the character agent type name is not found.
+    """
+    types = discover_character_agent_types()
+    if name not in types:
+        available = ", ".join(sorted(types.keys())) or "(none)"
+        raise ValueError(
+            f"Unknown character agent type '{name}'. Available: {available}"
+        )
+    return types[name]
+
+
+def list_character_agent_types() -> list[str]:
+    """List all available character agent type names.
+
+    Returns:
+        A sorted list of registered character agent type names.
+    """
+    return sorted(discover_character_agent_types().keys())

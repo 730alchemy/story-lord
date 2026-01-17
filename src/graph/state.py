@@ -5,7 +5,7 @@ from typing import Annotated
 
 from typing_extensions import TypedDict
 
-from models import NarratedStory, StoryArchitecture, StoryInput
+from models import CharacterMemory, NarratedStory, StoryArchitecture, StoryInput
 from tools.registry import ToolRegistry
 
 
@@ -22,3 +22,4 @@ class StoryGenerationState(TypedDict):
     output_dir: str
     architecture_saved: bool
     narrative_saved: bool
+    character_states: dict[str, CharacterMemory]  # character_id -> memory

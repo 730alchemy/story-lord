@@ -20,6 +20,10 @@ default = "agents.narrative.narrator_default:DefaultNarrator"
 default = "agents.editor.editor_default:DefaultEditor"
 simile-smasher = "agents.editor.editor_simile_smasher:SimileSmasherEditor"
 
+[project.entry-points."storylord.character_agents"]
+default = "agents.character.character_default:DefaultCharacterAgentType"
+mbti = "agents.character.character_mbti:MBTICharacterAgentType"
+
 [tool.pdm]
 distribution = true
 

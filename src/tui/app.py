@@ -8,7 +8,13 @@ from textual.widgets import Footer, Input, Select, Static, TextArea
 from textual import work
 from textual.worker import get_current_worker
 
-from agents.discovery import get_editor, list_architects, list_editors, list_narrators
+from agents.discovery import (
+    get_editor,
+    list_architects,
+    list_character_agent_types,
+    list_editors,
+    list_narrators,
+)
 from models import EditorInput
 
 
@@ -134,6 +140,7 @@ class AgentsModal(ModalScreen):
         architects = list_architects()
         narrators = list_narrators()
         editors = list_editors()
+        character_agents = list_character_agent_types()
 
         content = ["Available Agents", ""]
         content.append("Architects:")
@@ -144,6 +151,9 @@ class AgentsModal(ModalScreen):
         content.append("")
         content.append("Editors:")
         content.extend(f"  - {name}" for name in editors)
+        content.append("")
+        content.append("Character Agents:")
+        content.extend(f"  - {name}" for name in character_agents)
         content.append("")
         content.append("Press ESC to close")
 
