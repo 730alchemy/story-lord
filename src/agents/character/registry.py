@@ -10,6 +10,8 @@ from typing import TYPE_CHECKING, Any
 
 import structlog
 
+from pydantic import BaseModel
+
 if TYPE_CHECKING:
     from agents.character.protocols import CharacterAgent, CharacterAgentType
     from models import CharacterMemory, CharacterProfile
@@ -17,7 +19,7 @@ if TYPE_CHECKING:
 log = structlog.get_logger(__name__)
 
 
-class CharacterRegistry:
+class CharacterRegistry(BaseModel):
     """Runtime registry managing character agent instances.
 
     The registry handles character agent creation, caching, and memory

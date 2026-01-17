@@ -6,7 +6,13 @@ from typing import Literal
 
 import structlog
 
-from agents.discovery import get_architect, get_editor, get_narrator
+from agents.character.registry import CharacterRegistry
+from agents.discovery import (
+    discover_character_agent_types,
+    get_architect,
+    get_editor,
+    get_narrator,
+)
 from graph.delta import compute_text_delta
 from graph.state import StoryGenerationState
 from models import ArchitectInput, EditorInput, NarratorInput
@@ -16,12 +22,27 @@ log = structlog.get_logger(__name__)
 
 
 def load_input_node(state: StoryGenerationState) -> dict:
-    """Initialize tool_registry and tracking flags."""
+    """Initialize tool_registry, character_registry, and tracking flags."""
     story_input = state["story_input"]
     tool_registry = ToolRegistry(story_input.tools) if story_input.tools else None
 
+    # Create character registry and populate with characters that have agent_config
+    agent_types = discover_character_agent_types()
+    character_registry = CharacterRegistry(agent_types=agent_types)
+
+    for char in story_input.characters:
+        if char.agent_config:
+            character_registry.create_character(
+                character_id=char.name,
+                type_name=char.agent_config.agent_type,
+                profile=char,
+                properties=char.agent_config.agent_properties,
+                instructions=char.agent_config.agent_instructions,
+            )
+
     return {
         "tool_registry": tool_registry,
+        "character_registry": character_registry,
     }
 
 
@@ -68,6 +89,7 @@ def narrator_node(state: StoryGenerationState) -> dict:
     story_input = state["story_input"]
     architecture = state["architecture"]
     tool_registry = state["tool_registry"]
+    character_registry = state["character_registry"]
 
     narrator = get_narrator(story_input.narrator)
     log.info("running_narrator", narrator=story_input.narrator)
@@ -77,9 +99,21 @@ def narrator_node(state: StoryGenerationState) -> dict:
         characters=story_input.characters,
         tone=story_input.tone,
     )
-    narrated_story = narrator.generate(narrator_input, tools=tool_registry)
+    narrated_story = narrator.generate(
+        narrator_input,
+        tools=tool_registry,
+        character_registry=character_registry,
+    )
 
-    return {"narrated_story": narrated_story}
+    # Persist character memories to state
+    character_states = {}
+    if character_registry:
+        character_states = character_registry.get_all_memories()
+
+    return {
+        "narrated_story": narrated_story,
+        "character_states": character_states,
+    }
 
 
 def editor_node(state: StoryGenerationState) -> dict:

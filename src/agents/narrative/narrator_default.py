@@ -19,6 +19,7 @@ from models import (
 )
 
 if TYPE_CHECKING:
+    from agents.character.registry import CharacterRegistry
     from tools.registry import ToolRegistry
 
 log = structlog.get_logger(__name__)
@@ -123,7 +124,8 @@ class DefaultNarrator:
     def generate(
         self,
         input: NarratorInput,
-        tools: ToolRegistry | None = None,
+        tools: "ToolRegistry | None" = None,
+        character_registry: "CharacterRegistry | None" = None,
     ) -> NarratedStory:
         """Generate complete narrative prose from a story architecture.
 
@@ -135,10 +137,12 @@ class DefaultNarrator:
         Args:
             input: The narrator input parameters.
             tools: Optional tool registry (not used by default narrator).
+            character_registry: Optional registry of character agent instances.
 
         Returns:
             A complete narrated story.
         """
+        self._character_registry = character_registry
         generation_chain = self._create_generation_chain()
         evaluation_chain = self._create_evaluation_chain()
 

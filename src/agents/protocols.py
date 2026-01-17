@@ -9,6 +9,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Protocol
 
 if TYPE_CHECKING:
+    from agents.character.registry import CharacterRegistry
     from models import (
         ArchitectInput,
         EditedText,
@@ -60,6 +61,7 @@ class Narrator(Protocol):
         self,
         input: NarratorInput,
         tools: ToolRegistry | None = None,
+        character_registry: "CharacterRegistry | None" = None,
     ) -> NarratedStory:
         """Generate narrative prose from a story architecture.
 
@@ -67,6 +69,7 @@ class Narrator(Protocol):
             input: The narrator input including the story architecture,
                    characters, and tone.
             tools: Optional registry of tools the agent can use.
+            character_registry: Optional registry of character agent instances.
 
         Returns:
             A complete narrated story with prose for each beat.

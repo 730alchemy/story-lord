@@ -5,6 +5,7 @@ from typing import Annotated
 
 from typing_extensions import TypedDict
 
+from agents.character.registry import CharacterRegistry
 from models import CharacterMemory, NarratedStory, StoryArchitecture, StoryInput
 from tools.registry import ToolRegistry
 
@@ -14,6 +15,7 @@ class StoryGenerationState(TypedDict):
 
     story_input: StoryInput
     tool_registry: ToolRegistry | None
+    character_registry: CharacterRegistry | None
     architecture: StoryArchitecture | None
     narrated_story: NarratedStory | None
     edited_narrations: Annotated[list[str], operator.add]  # Reducer for append
